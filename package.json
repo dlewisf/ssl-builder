@@ -1,0 +1,14 @@
+{
+  "name": "ssl-script",
+  "version": "0.0.1",
+  "description": "Make self signed certs with a CA and intermediate CA.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Lewis-Frazier",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^4.0.1"
+  }
+}
