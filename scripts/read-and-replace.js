@@ -6,7 +6,7 @@ const readAndReplace = (from, replacement) => (
       if (err) {
         console.error(err);
         process.exit(6);
-      };
+      }
 
       const reg = new RegExp('__directory__', 'g');
       const replaced = data.toString().replace(reg ,replacement);

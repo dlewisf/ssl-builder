@@ -6,7 +6,7 @@ const write = (file, data) => (
       if (err) {
         console.error(err);
         process.exit(5);
-      };
+      }
       console.log(` - Wrote file ${file}.`);
       resolve(true);
     })

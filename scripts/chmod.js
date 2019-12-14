@@ -6,7 +6,7 @@ const chmod = (file, access) => (
       if (err) {
         console.error(err);
         process.exit(4);
-      };
+      }
       console.log(` - Changed permissions for ${file} to ${access}.`);
       resolve(true);
     })
