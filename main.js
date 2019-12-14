@@ -26,12 +26,11 @@ if (!rootDir) {
   process.exit(2);
 }
 
-/** 
+/**
  * Starting the scripting process.
  * **/
-const buildSslDirectory = async () => await mkdir(`${rootDir}/ssl`);
-  
 const buildRootCaStructure = async type => {
+  if (!fs.existsSync(`${rootDir}/ssl`)) await mkdir(`${rootDir}/ssl`);
   await mkdir(`${rootDir}/ssl/${type}/ca`, true);
   //certs crl newcerts private
   await mkdir(`${rootDir}/ssl/${type}/ca/certs`);
@@ -47,10 +46,7 @@ const buildRootCaStructure = async type => {
 };
 
 const execute = () => {
-  buildSslDirectory();
-  if (buildServer) {
-    buildRootCaStructure('server');
-  }
+  if (buildServer) buildRootCaStructure('server');
 }
 
 execute();
