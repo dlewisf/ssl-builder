@@ -15,14 +15,16 @@ const concatChain = require('./scripts/concat-chain');
 
 
 program
-  .version('0.0.1')
-  .option('-d, --root-dir <path>', 'The path to start from.')
-  .option('-s, --build-server', 'Build SSL cert data for the server.', false)
-  .option('-c, --build-client', 'Build SSL cert data for the client.', false);
+    .version('0.0.1')
+    .option('-d, --root-dir <path>', 'The path to start from.')
+    .option('-r, --build-server', 'Build a new SSL stack for the server.', false)
+    .option('-t, --build-client', 'Build a new SSL stack for the client.', false)
+    .option('-k, --key-path <path>', 'Set the existing key path.', false)
+    .option('-c, --new-cert <type>', 'Create a new cert signed by an existing key.', false);
 program.parse(process.argv);
 
 // Set the program's variables
-const {rootDir, buildServer, buildClient} = program;
+const {rootDir, buildServer, buildClient, keyPath, newCert} = program;
 
 // Make sure the root directory is set and exists.
 if (!rootDir) {
@@ -128,7 +130,9 @@ const buildIntermediateCaStructure = async type => {
 
 const buildKeyAndCert = async type => {
   await buildSslDir();
-  const {key, csr, cert, intermediateConfigPath, caChainCert} = filePaths(type);
+  const {csr, cert, intermediateConfigPath, caChainCert} = filePaths(type);
+  let key = (keyPath) ? keyPath : filePaths(type).key;
+
 
   await opensslGenKey(key);
   await chmod(key, '444');
@@ -156,6 +160,12 @@ const execute = async () => {
     await buildRootCaStructure('client');
     await buildIntermediateCaStructure('client');
     await buildKeyAndCert('client');
+  }
+  if (newCert) {
+    console.log('----------------------------------------');
+    console.log('---------- Sign Certs Only -------------');
+    console.log('----------------------------------------');
+    await buildKeyAndCert(newCert);
   }
   console.log('----------------------------------------');
   console.log('----------------- DONE -----------------');
