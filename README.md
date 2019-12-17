@@ -1,6 +1,6 @@
 # SSL Builder
 A command line script that creates Certificate Authorities, Keys, and Certificates.
-This is base off of this guide: [OpenSSL Certificate Authority](https://jamielinux.com/docs/openssl-certificate-authority/index.html)
+This is base off of Jamie Nguyen's [OpenSSL Certificate Authority](https://jamielinux.com/docs/openssl-certificate-authority/index.html) guide.
 ### Installation
 Clone this repo. Then run `npm install` to install dependencies.
 ```bash 
