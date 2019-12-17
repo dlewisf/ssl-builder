@@ -18,8 +18,8 @@ const concatChain = require('./scripts/concat-chain');
 
 
 program
-    .version('0.0.1')
-    .option('-r, --root-dir <path>', 'The path to start from.')
+    .version('0.1.0')
+    .requiredOption('-r, --root-dir <path>', 'The path to start from.')
     .option('-s, --build-server', 'Build a new SSL stack for the server.', false)
     .option('-c, --build-client', 'Build a new SSL stack for the client.', false)
     .option('-i, --include-intermediate', 'Create an intermediate CA.', false)
@@ -42,10 +42,14 @@ if (!rootDir) {
 /**
  * Starting the scripting process.
  * **/
-const buildSslDir = async () => {
+const buildRequiredDirectories = async () => {
   if (!fs.existsSync(`${rootDir}/ssl`)) {
     await mkdir(`${rootDir}/ssl`);
     await chmod(`${rootDir}/ssl`, '755');
+  }
+  if (!fs.existsSync(`${rootDir}/ssl/files`)) {
+    await mkdir(`${rootDir}/ssl/files`);
+    await chmod(`${rootDir}/ssl/files`, '755');
   }
 };
 
@@ -68,6 +72,7 @@ const filePaths = type => {
   const key = `${rootDir}/ssl/${type}/ca/intermediate/private/${keyName}`;
   const csr = `${rootDir}/ssl/${type}/ca/intermediate/csr/${csrName}`;
   const cert = `${rootDir}/ssl/${type}/ca/intermediate/certs/${certName}`;
+  const files = `${rootDir}/ssl/files`;
   return {
     rootConfig,
     rootCAKey,
@@ -82,13 +87,14 @@ const filePaths = type => {
     csr,
     csrName,
     cert,
-    certName
+    certName,
+    files
   }
 };
 
 const buildRootCaStructure = async type => {
-  await buildSslDir();
-  const {rootConfig, rootCAKey, rootCACert} = filePaths(type);
+  await buildRequiredDirectories();
+  const {rootConfig, rootCAKey, rootCACert, files} = filePaths(type);
 
   await mkdir(`${rootDir}/ssl/${type}/ca`, true);
   await mkdir(`${rootDir}/ssl/${type}/ca/certs`);
@@ -103,15 +109,16 @@ const buildRootCaStructure = async type => {
   await opensslGenKey(rootCAKey);
   await chmod(rootCAKey, '400');
   await opensslSignCert(rootConfig, rootCAKey, rootCACert);
+  await copyFile(rootCAKey, `${files}/ca.cert.pem`);
   await chmod(rootCACert, '444');
   await opensslValidateCert(rootCACert);
 };
 
 const buildIntermediateCaStructure = async type => {
-  await buildSslDir();
+  await buildRequiredDirectories();
   const {
     rootConfig, rootCACert, intermediateConfig, intermediateCAKey,
-    intermediateCACsr, intermediateCACert, caChainCert
+    intermediateCACsr, intermediateCACert, caChainCert, files
   } = filePaths(type);
 
   await mkdir(`${rootDir}/ssl/${type}/ca/intermediate`);
@@ -131,51 +138,37 @@ const buildIntermediateCaStructure = async type => {
     await chmod(intermediateCAKey, '400');
     await opensslGenCsr(intermediateConfig, intermediateCAKey, intermediateCACsr);
     await opensslSignCsrAndMakeCert(rootConfig, intermediateCACsr, intermediateCACert, 'v3_intermediate_ca');
+    await copyFile(intermediateCACert, `${files}/intermediate.cert.pem`);
     await chmod(intermediateCACert, '444');
     await opensslValidateCert(intermediateCACert);
     await opensslValidateCas(rootCACert, intermediateCACert);
     const chain = await concatChain(rootCACert, intermediateCACert);
     await write(caChainCert, chain);
+    await copyFile(caChainCert, `${files}/ca-chain.cert.pem`);
     await chmod(caChainCert, '444');
   }
 };
 
 const buildKeyAndCert = async type => {
-  await buildSslDir();
-  const {csr, cert, intermediateConfig, caChainCert, rootCACert, rootConfig} = filePaths(type);
+  await buildRequiredDirectories();
+  const {csr, cert, intermediateConfig, caChainCert, rootCACert, rootConfig,
+      files, keyName, certName
+  } = filePaths(type);
   let key = (keyPath) ? keyPath : filePaths(type).key;
   const config = (includeIntermediate) ? intermediateConfig : rootConfig;
   let chain = (includeIntermediate) ? caChainCert : rootCACert;
 
   await opensslGenKey(key);
+  await copyFile(key, `${files}/${keyName}`);
   await chmod(key, '444');
   await opensslGenCsr(config, key, csr);
   const extension = type === 'server' ? 'server_cert': 'usr_cert';
   await opensslSignCsrAndMakeCert(config, csr, cert, extension);
+  await copyFile(cert, `${files}/${certName}`);
   await chmod(cert, '444');
   await opensslValidateCas(chain, cert);
 };
 
-const collectKeysAndCerts = async () => {
-  const files = `${rootDir}/ssl/files`;
-  await buildSslDir();
-  if (!fs.existsSync(files)) {
-    await mkdir(files);
-    await chmod(files, '755');
-  }
-
-  const run = async type => {
-    const {key, keyName, certName, cert, rootCACert, caChainCert} = filePaths(type);
-    await copyFile(cert, `${files}/${certName}`);
-    await copyFile(key, `${files}/${keyName}`);
-    // await copyFile(rootCACert, `${files}/ca.cert.pem`);
-    if (includeIntermediate) await copyFile(caChainCert, `${files}/ca-chain.cert.pem`);
-  };
-
-  if(buildClient) await run('client');
-  if(buildServer) await run('server');
-
-};
 
 const execute = async () => {
   // Clean that the SSL dir at the to of the script.
@@ -203,11 +196,6 @@ const execute = async () => {
     console.log('----------------------------------------');
     await buildKeyAndCert(newCert);
   }
-
-  console.log('----------------------------------------');
-  console.log('------- Collect Keys and Certs ---------');
-  console.log('----------------------------------------');
-  await collectKeysAndCerts();
 
   console.log('----------------------------------------');
   console.log('----------------- DONE -----------------');
