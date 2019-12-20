@@ -1,6 +1,6 @@
 {
   "name": "ssl-script",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Make self signed certs with a CA and intermediate CA.",
   "main": "main.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "David Lewis-Frazier",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^3.0.0",
     "commander": "^4.0.1"
   }
 }

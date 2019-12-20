@@ -1,4 +1,6 @@
-const { spawn } = require('child_process');
+const { spawn } = require('child_process'),
+    chalk = require('chalk'),
+    log = console.log;
 
 const opensslSignRootCert = (configPath, keyPath, certPath) => (
     new Promise(resolve => {
@@ -10,10 +12,10 @@ const opensslSignRootCert = (configPath, keyPath, certPath) => (
 
         openssl.on('close', (code) => {
             if (code>0) {
-                console.error(`Failed at the openssl root CA signing step. Code: ${code}`);
+                log(chalk.red(`Failed at the openssl root CA signing step. Code: ${code}`));
                 process.exit(code);
             }
-            console.log(` - Signed Root CA: ${certPath} (Closing Code: ${code})`);
+            log(chalk.green(`Signed Root CA [ ${certPath} ]`));
             resolve(true);
         });
     })

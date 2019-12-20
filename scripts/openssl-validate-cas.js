@@ -1,5 +1,7 @@
-const { spawn } = require('child_process');
-//openssl verify -CAfile certs/ca.cert.pem intermediate/certs/intermediate.cert.pem
+const { spawn } = require('child_process'),
+    chalk = require('chalk'),
+    log = console.log;
+
 const opensslValidateCas = (rootCert, intermediateCert ) => (
     new Promise(resolve => {
         const openssl = spawn('openssl', ['verify', '-CAfile', rootCert, intermediateCert]);
@@ -8,10 +10,10 @@ const opensslValidateCas = (rootCert, intermediateCert ) => (
 
         openssl.on('close', (code) => {
             if (code>0) {
-                console.error(`Failed at the openssl CA validation step. Code: ${code}`);
+                log(chalk.red(`Failed at the openssl CA validation step. Code: ${code}`));
                 process.exit(code);
             }
-            console.log(` - Validated Intermediate against Root CA: [ ${intermediateCert} ] - [ ${rootCert} ] (Closing Code: ${code})`);
+            log(chalk.green(`Validated Intermediate against Root CA: [ ${intermediateCert} ] - [ ${rootCert} ]`));
             resolve(true);
         });
     })

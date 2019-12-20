@@ -1,6 +1,10 @@
 const commander = require('commander');
 const program = new commander.Command();
+const chalk = require('chalk');
+const log = console.log;
+const blue_bold = chalk.blue.bold;
 const fs = require('fs');
+const _package = require('./package');
 
 const cleanSslDir = require('./scripts/clear-ssl-directory');
 const copyFile = require('./scripts/copy-file');
@@ -18,7 +22,7 @@ const concatChain = require('./scripts/concat-chain');
 
 
 program
-    .version('0.1.0')
+    .version(_package.version)
     .requiredOption('-r, --root-dir <path>', 'The path to start from.')
     .option('-s, --build-server', 'Build a new SSL stack for the server.', false)
     .option('-c, --build-client', 'Build a new SSL stack for the client.', false)
@@ -175,31 +179,31 @@ const execute = async () => {
   if (fs.existsSync(`${rootDir}/ssl`)) await cleanSslDir(`${rootDir}/ssl`);
 
   if (buildServer) {
-    console.log('----------------------------------------');
-    console.log('------- Building SERVER Certs ----------');
-    console.log('----------------------------------------');
+    log(blue_bold('----------------------------------------'));
+    log(blue_bold('------- Building SERVER Certs ----------'));
+    log(blue_bold('----------------------------------------'));
     await buildRootCaStructure('server');
     await buildIntermediateCaStructure('server');
     await buildKeyAndCert('server');
   }
   if (buildClient) {
-    console.log('----------------------------------------');
-    console.log('------- Building CLIENT Certs ----------');
-    console.log('----------------------------------------');
+    log(blue_bold('----------------------------------------'));
+    log(blue_bold('------- Building CLIENT Certs ----------'));
+    log(blue_bold('----------------------------------------'));
     await buildRootCaStructure('client');
     await buildIntermediateCaStructure('client');
     await buildKeyAndCert('client');
   }
   if (newCert) {
-    console.log('----------------------------------------');
-    console.log('---------- Sign Certs Only -------------');
-    console.log('----------------------------------------');
+    log(blue_bold('----------------------------------------'));
+    log(blue_bold('---------- Sign Certs Only -------------'));
+    log(blue_bold('----------------------------------------'));
     await buildKeyAndCert(newCert);
   }
 
-  console.log('----------------------------------------');
-  console.log('----------------- DONE -----------------');
-  console.log('----------------------------------------');
+  log(blue_bold('----------------------------------------'));
+  log(blue_bold('----------------- DONE -----------------'));
+  log(blue_bold('----------------------------------------'));
   process.exit(0);
 };
 

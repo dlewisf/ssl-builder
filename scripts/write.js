@@ -1,4 +1,6 @@
-const fs = require('fs');
+const fs = require('fs'),
+    chalk = require('chalk'),
+    log = console.log;
 
 const write = (file, data) => (
   new Promise(resolve => {
@@ -7,7 +9,7 @@ const write = (file, data) => (
         console.error(err);
         process.exit(5);
       }
-      console.log(` - Wrote file ${file}.`);
+      log(chalk.green(`Wrote file [ ${file} ]`));
       resolve(true);
     })
   })

@@ -1,4 +1,6 @@
-const fs = require('fs');
+const fs = require('fs'),
+    chalk = require('chalk'),
+    log = console.log;
 
 const readAndReplace = (from, replacement) => (
   new Promise(resolve => {
@@ -11,7 +13,7 @@ const readAndReplace = (from, replacement) => (
       const reg = new RegExp('__directory__', 'g');
       const replaced = data.toString().replace(reg ,replacement);
 
-      console.log(` - Read from file ${from}, and replaced placeholders with ${replacement}.`);
+      log(chalk.green(`Read from file [ ${from} ], and replaced placeholders with ${replacement}.`));
       // Return the replaced data.
       resolve(replaced);
     });
