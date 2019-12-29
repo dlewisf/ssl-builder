@@ -6,7 +6,7 @@ const os = require('os');
 const _package = require('./package');
 
 const cleanSslDir = require('./scripts/clear-ssl-directory');
-const rootDirectory = require('./scripts/root-directory');
+
 
 const buildKeyAndCert = require('./jobs/build-key-and-cert');
 const buildRootCa = require('./jobs/build-root-ca');
@@ -26,13 +26,13 @@ program
 program.parse(process.argv);
 
 // Set the program's variables
-const {rootDir, buildServer, buildClient, keyPath, newCert, includeIntermediate, logLevel} = program;
+const {rootDir, buildServer, buildClient, newCert, includeIntermediate, logLevel} = program;
 
 // Setup log levels from command line.
 const log = require('./log')(logLevel);
 
 // Make sure the root directory is set and exists.
-rootDirectory(rootDir);
+require('./scripts/root-directory')(rootDir);
 
 const execute = async () => {
   // Clean that the SSL dir at the to of the script.

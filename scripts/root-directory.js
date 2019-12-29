@@ -2,6 +2,7 @@ const fs = require('fs'),
   log = require('../log')();
 
 function rootDirectory(dir) {
+  log.debug(dir);
   if (!dir) {
     log.error('Please provide a starting directory.');
     process.exit(1);
