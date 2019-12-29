@@ -2,6 +2,7 @@ const commander = require('commander');
 const program = new commander.Command();
 
 const fs = require('fs');
+const os = require('os');
 const _package = require('./package');
 
 const cleanSslDir = require('./scripts/clear-ssl-directory');
@@ -14,7 +15,7 @@ const buildIntermediateCa = require('./jobs/build-intermediate-ca');
 
 program
   .version(_package.version)
-  .requiredOption('-r, --root-dir <path>', 'The path to start from.')
+  .option('-r, --root-dir <path>', 'The path to start from.', os.homedir())
   .option('-s, --build-server', 'Build a new SSL stack for the server.', false)
   .option('-c, --build-client', 'Build a new SSL stack for the client.', false)
   .option('-i, --include-intermediate', 'Create an intermediate CA.', false)
