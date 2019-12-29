@@ -4,9 +4,6 @@ const program = new commander.Command();
 const fs = require('fs');
 const os = require('os');
 const _package = require('./package');
-// const cleanSslDir = require('./scripts/clear-ssl-directory');
-
-console.log(os.homedir());
 
 program
   .version(_package.version)
@@ -20,22 +17,21 @@ program
 program.parse(process.argv);
 
 // Set the program's variables
-console.log(program);
 const {rootDir, buildServer, buildClient, newCert, includeIntermediate, logLevel} = program;
 
 // Setup log levels from command line.
 const log = require('./log')(logLevel);
 
 // Make sure the root directory is set and exists.
-log.info(program);
 require('./scripts/root-directory')(rootDir);
 
 const execute = async () => {
-  const buildKeyAndCert = require('./jobs/build-key-and-cert');
-  const buildRootCa = require('./jobs/build-root-ca');
-  const buildIntermediateCa = require('./jobs/build-intermediate-ca');
+  const buildKeyAndCert = require('./jobs/build-key-and-cert'),
+    buildRootCa = require('./jobs/build-root-ca'),
+    buildIntermediateCa = require('./jobs/build-intermediate-ca'),
+    cleanSslDir = require('./scripts/clear-ssl-directory');
   // Clean that the SSL dir at the to of the script.
-  // if (fs.existsSync(`${rootDir}/ssl`)) await cleanSslDir(`${rootDir}/ssl`);
+  if (fs.existsSync(`${rootDir}/ssl`)) await cleanSslDir(`${rootDir}/ssl`);
   
   if (buildServer) {
     log.header('----------------------------------------');
