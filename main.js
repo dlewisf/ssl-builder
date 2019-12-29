@@ -31,6 +31,7 @@ const {rootDir, buildServer, buildClient, newCert, includeIntermediate, logLevel
 const log = require('./log')(logLevel);
 
 // Make sure the root directory is set and exists.
+log.info(program);
 require('./scripts/root-directory')(rootDir);
 
 const execute = async () => {
