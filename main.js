@@ -4,9 +4,7 @@ const program = new commander.Command();
 const fs = require('fs');
 const os = require('os');
 const _package = require('./package');
-
-const cleanSslDir = require('./scripts/clear-ssl-directory');
-
+// const cleanSslDir = require('./scripts/clear-ssl-directory');
 
 const buildKeyAndCert = require('./jobs/build-key-and-cert');
 const buildRootCa = require('./jobs/build-root-ca');
@@ -26,6 +24,7 @@ program
 program.parse(process.argv);
 
 // Set the program's variables
+console.log(program);
 const {rootDir, buildServer, buildClient, newCert, includeIntermediate, logLevel} = program;
 
 // Setup log levels from command line.
@@ -36,7 +35,7 @@ require('./scripts/root-directory')(rootDir);
 
 const execute = async () => {
   // Clean that the SSL dir at the to of the script.
-  if (fs.existsSync(`${rootDir}/ssl`)) await cleanSslDir(`${rootDir}/ssl`);
+  // if (fs.existsSync(`${rootDir}/ssl`)) await cleanSslDir(`${rootDir}/ssl`);
   
   if (buildServer) {
     log.header('----------------------------------------');
