@@ -1,6 +1,5 @@
 const fs = require('fs'),
-    chalk = require('chalk'),
-    log = console.log;
+  log = require('../log')();
 
 
 const mkdir = (path, recursive=false) => (
@@ -10,7 +9,7 @@ const mkdir = (path, recursive=false) => (
         console.error(err);
         process.exit(3);
       }
-      log(chalk.green(`Created directory at [ ${path} ]`));
+      log.info(`Created directory at [ ${path} ]`);
       resolve(true);
     });
   })

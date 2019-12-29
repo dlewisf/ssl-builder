@@ -1,6 +1,5 @@
 const { spawn } = require('child_process'),
-    chalk = require('chalk'),
-    log = console.log;
+  log = require('../log')();
 
 const opensslValidateCert = certPath => (
     new Promise(resolve => {
@@ -10,10 +9,10 @@ const opensslValidateCert = certPath => (
 
         openssl.on('close', (code) => {
             if (code>0) {
-                log(chalk.red(`Failed at the openssl root CA validation step. Code: ${code}`));
+                log.error(`Failed at the openssl root CA validation step. Code: ${code}`);
                 process.exit(code);
             }
-            log(chalk.green(`Validated Root CA [ ${certPath} ]`));
+            log.info(`Validated Root CA [ ${certPath} ]`);
             resolve(true);
         });
     })

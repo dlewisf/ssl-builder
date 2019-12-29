@@ -1,11 +1,12 @@
-const fs = require('fs');
+const fs = require('fs'),
+  log = require('../log')();
 
 function rootDirectory(dir) {
   if (!dir) {
-    console.error('Please provide a starting directory.');
+    log.error('Please provide a starting directory.');
     process.exit(1);
   } else if (!fs.existsSync(dir)) {
-    console.error(`Unable to find directory at: ${dir}`);
+    log.error(`Unable to find directory at: [ ${dir} ]`);
     process.exit(2);
   }
   return dir;

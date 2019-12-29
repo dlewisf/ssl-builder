@@ -1,6 +1,6 @@
 const fs = require('fs'),
     chalk = require('chalk'),
-    log = console.log;
+    log = require('../log')();
 
 const chmod = (file, access) => (
   new Promise(resolve => {
@@ -9,7 +9,7 @@ const chmod = (file, access) => (
         console.error(err);
         process.exit(4);
       }
-      log(chalk.green(`Changed permissions for [ ${file} ] to ${chalk.bold(access)}`));
+      log.info(`Changed permissions for [ ${file} ] to ${chalk.bold(access)}`);
       resolve(true);
     })
   })

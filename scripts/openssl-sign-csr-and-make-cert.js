@@ -1,6 +1,5 @@
 const { spawn } = require('child_process'),
-    chalk = require('chalk'),
-    log = console.log;
+  log = require('../log')();
 
 const opensslSignCsrAndMakeCert = (rootConfigPath, csrPath, certPath, extensions) => (
     new Promise(resolve => {
@@ -14,10 +13,10 @@ const opensslSignCsrAndMakeCert = (rootConfigPath, csrPath, certPath, extensions
 
         openssl.on('close', (code) => {
             if (code>0) {
-                log(chalk.red(`Failed at the openssl csr signing step. Code: ${code}`));
+                log.error(`Failed at the openssl csr signing step. Code: ${code}`);
                 process.exit(code);
             }
-            log(chalk.green(`Signed csr and make a cert [ ${certPath} ]`));
+            log.info(`Signed csr and make a cert [ ${certPath} ]`);
             resolve(true);
         });
     })

@@ -1,10 +1,9 @@
 const { spawn } = require('child_process'),
-	chalk = require('chalk'),
-	log = console.log;
+	log = require('../log')();
 
 const cleanSslDir = sslDirPath => (
 	new Promise(resolve => {
-		log(chalk.blue('Removing the root SSL dir'));
+		log.debug('Removing the root SSL dir');
 		const rm = spawn('rm', ['-rf', sslDirPath]);
 
 		rm.stdout.on('data', (data) => { process.stderr.write(data.toString()); });
@@ -12,10 +11,10 @@ const cleanSslDir = sslDirPath => (
 
 		rm.on('close', (code) => {
 			if (code>0) {
-				log(chalk.red(`Failed to remove [ ${sslDirPath} ] Error Code: ${code}`));
+				log.error(`Failed to remove [ ${sslDirPath} ] Error Code: ${code}`);
 				process.exit(code);
 			}
-			log(chalk.green(`Removed data from [ ${sslDirPath} ]`));
+			log.info(`Removed data from [ ${sslDirPath} ]`);
 			resolve(true);
 		});
 	})
