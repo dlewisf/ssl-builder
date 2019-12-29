@@ -17,7 +17,7 @@ program
 program.parse(process.argv);
 
 // Set the program's variables
-const {rootDir, buildServer, buildClient, newCert, includeIntermediate, logLevel} = program;
+const {rootDir, buildServer, buildClient, newCert, keyPath, includeIntermediate, logLevel} = program;
 
 // Setup log levels from command line.
 const log = require('./log')(logLevel);
@@ -39,7 +39,7 @@ const execute = async () => {
     log.header('----------------------------------------');
     await buildRootCa('server');
     await buildIntermediateCa('server', includeIntermediate);
-    await buildKeyAndCert('server');
+    await buildKeyAndCert('server')({keyPath, includeIntermediate});
   }
   if (buildClient) {
     log.header('----------------------------------------');
@@ -47,13 +47,13 @@ const execute = async () => {
     log.header('----------------------------------------');
     await buildRootCa('client');
     await buildIntermediateCa('client', includeIntermediate);
-    await buildKeyAndCert('client');
+    await buildKeyAndCert('client')({keyPath, includeIntermediate});
   }
   if (newCert) {
     log.header('----------------------------------------');
     log.header('---------- Sign Certs Only -------------');
     log.header('----------------------------------------');
-    await buildKeyAndCert(newCert);
+    await buildKeyAndCert(newCert)({keyPath, includeIntermediate});
   }
   
   log.header('----------------------------------------');

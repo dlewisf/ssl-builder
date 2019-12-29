@@ -9,7 +9,8 @@ const rootDir = require('../scripts/root-directory')(),
   opensslValidateCas = require('../scripts/openssl-validate-cas'),
   copyFile = require('../scripts/copy-file');
 
-const buildKeyAndCert = async type => {
+const buildKeyAndCert = type => async props => {
+  const {keyPath, includeIntermediate} = props;
   await buildRequiredDirectories(rootDir);
   const {
     csr, cert, intermediateConfig, caChainCert, rootCACert, rootConfig,
