@@ -12,6 +12,7 @@ const buildKeyAndCert = require('./jobs/build-key-and-cert');
 const buildRootCa = require('./jobs/build-root-ca');
 const buildIntermediateCa = require('./jobs/build-intermediate-ca');
 
+console.log(os.homedir());
 
 program
   .version(_package.version)
