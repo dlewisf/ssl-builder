@@ -6,10 +6,6 @@ const os = require('os');
 const _package = require('./package');
 // const cleanSslDir = require('./scripts/clear-ssl-directory');
 
-const buildKeyAndCert = require('./jobs/build-key-and-cert');
-const buildRootCa = require('./jobs/build-root-ca');
-const buildIntermediateCa = require('./jobs/build-intermediate-ca');
-
 console.log(os.homedir());
 
 program
@@ -35,6 +31,9 @@ log.info(program);
 require('./scripts/root-directory')(rootDir);
 
 const execute = async () => {
+  const buildKeyAndCert = require('./jobs/build-key-and-cert');
+  const buildRootCa = require('./jobs/build-root-ca');
+  const buildIntermediateCa = require('./jobs/build-intermediate-ca');
   // Clean that the SSL dir at the to of the script.
   // if (fs.existsSync(`${rootDir}/ssl`)) await cleanSslDir(`${rootDir}/ssl`);
   
